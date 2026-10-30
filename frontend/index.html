@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Deep-Fake Guard | Home</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Check login -->
+    <script>
+        if (!localStorage.getItem("dfg_username")) {
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <a href="index.html" class="logo">Deep-Fake Guard</a>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="detect.html">Detect</a>
+            <a href="history.html">History</a>
+            <a href="about.html">About</a>
+
+            <button id="logout-btn" class="logout-btn">
+                Logout
+            </button>
+        </nav>
+    </header>
+
+
+    <main class="container">
+
+        <!-- WELCOME SECTION -->
+        <section class="card welcome-card">
+
+            <div class="welcome-icon">🛡️</div>
+
+            <h1>Combat Media Manipulation with AI</h1>
+
+            <p class="welcome-user">
+                Welcome back,
+                <span id="user-display"></span>!
+            </p>
+
+            <p>
+                Deep-Fake Guard is an AI-powered media verification
+                application designed to identify manipulated images,
+                videos, synthetic audio and suspicious emails.
+            </p>
+
+            <a href="detect.html" class="btn">
+                Start Image & Video Detection
+            </a>
+
+        </section>
+
+
+        <!-- DETECTION MODULES -->
+        <section class="section-heading">
+            <h2>Our Detection Modules</h2>
+            <p>Choose a module to verify digital content.</p>
+        </section>
+
+
+        <section class="module-grid">
+
+            <!-- IMAGE AND VIDEO -->
+            <div class="card module-card">
+
+                <div class="module-icon">🖼️</div>
+
+                <h3>Image & Video Detection</h3>
+
+                <p>
+                    Upload images or videos to check whether
+                    they are genuine or manipulated using AI.
+                </p>
+
+                <a href="detect.html" class="btn">
+                    Detect Media
+                </a>
+
+            </div>
+
+
+            <!-- AUDIO -->
+            <div class="card module-card audio-module">
+
+                <div class="module-icon">🎙️</div>
+
+                <h3>Audio Deepfake Detection</h3>
+
+                <p>
+                    Upload normal call recordings, voice notes
+                    or audio files to check whether the voice
+                    is likely genuine or AI-generated.
+                </p>
+
+                <a href="#audio-section" class="btn">
+                    Detect Audio
+                </a>
+
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="card module-card email-module">
+
+                <div class="module-icon">📧</div>
+
+                <h3>Email Fraud Detection</h3>
+
+                <p>
+                    Analyze suspicious emails and identify
+                    phishing keywords, suspicious links
+                    and possible email fraud.
+                </p>
+
+                <a href="#email-section" class="btn">
+                    Check Email
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- AUDIO DEEPFAKE DETECTION -->
+        <section class="card detection-card" id="audio-section">
+
+            <div class="section-icon">🎙️</div>
+
+            <h2>Audio Deepfake Detection</h2>
+
+            <p>
+                Upload a call recording, voice note or audio file
+                to analyze whether it is likely genuine or AI-generated.
+            </p>
+
+            <form id="audioForm">
+
+                <label for="audioFile">
+                    Select Audio Recording
+                </label>
+
+                <input
+                    type="file"
+                    id="audioFile"
+                    accept=".wav,.mp3,.m4a,.ogg,audio/*"
+                    required
+                >
+
+                <p id="audioFileName" class="file-name">
+                    No audio file selected
+                </p>
+
+                <audio id="audioPreview" controls
+                       class="audio-preview" hidden>
+                </audio>
+
+                <button
+                    type="submit"
+                    id="audioAnalyzeBtn"
+                    class="btn full-btn">
+                    Analyze Audio
+                </button>
+
+            </form>
+
+
+            <div id="audioResults" class="results-card"
+                 style="display:none;">
+
+                <h3>Audio Analysis Result</h3>
+
+                <p>
+                    Filename:
+                    <strong id="audioResultFilename"></strong>
+                </p>
+
+                <p>
+                    Prediction:
+                    <span id="audioPrediction"></span>
+                </p>
+
+                <p>
+                    Confidence:
+                    <strong id="audioConfidence"></strong>%
+                </p>
+
+                <p id="audioMessage"></p>
+
+                <p class="disclaimer">
+                    This is an experimental model prediction,
+                    not proof of audio authenticity.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- EMAIL FRAUD DETECTION -->
+        <section class="card detection-card" id="email-section">
+
+            <div class="section-icon">📧</div>
+
+            <h2>Email Fraud Detection</h2>
+
+            <p>
+                Enter email information to identify suspicious
+                content and possible phishing attempts.
+            </p>
+
+            <form id="emailForm">
+
+                <label for="emailSender">
+                    Sender Email
+                </label>
+
+                <input
+                    type="email"
+                    id="emailSender"
+                    placeholder="example@gmail.com"
+                    required
+                >
+
+                <label for="emailSubject">
+                    Email Subject
+                </label>
+
+                <input
+                    type="text"
+                    id="emailSubject"
+                    placeholder="Enter email subject"
+                    required
+                >
+
+                <label for="emailBody">
+                    Email Message
+                </label>
+
+                <textarea
+                    id="emailBody"
+                    rows="5"
+                    placeholder="Paste the email message here..."
+                    required>
+                </textarea>
+
+                <button
+                    type="submit"
+                    id="emailAnalyzeBtn"
+                    class="btn full-btn">
+                    Analyze Email
+                </button>
+
+            </form>
+
+
+            <div id="emailResults" class="results-card"
+                 style="display:none;">
+
+                <h3>Email Analysis Result</h3>
+
+                <p>
+                    Status:
+                    <strong id="emailStatus"></strong>
+                </p>
+
+                <p>
+                    Risk Score:
+                    <strong id="emailRiskScore"></strong>/100
+                </p>
+
+                <h4>Detected Indicators</h4>
+
+                <ul id="emailIndicators"></ul>
+
+                <h4>URLs Found</h4>
+
+                <ul id="emailUrls"></ul>
+
+                <p class="disclaimer">
+                    Rule-based email screening cannot guarantee
+                    whether an email is safe.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+        © 2026 Deep-Fake Guard Demonstration.
+        AI-Based Digital Media Verification.
+    </footer>
+
+
+    <!-- USER AND LOGOUT -->
+    <script>
+        const username = localStorage.getItem("dfg_username");
+
+        document.getElementById("user-display").textContent =
+            username || "User";
+
+        document.getElementById("logout-btn")
+            .addEventListener("click", () => {
+
+                localStorage.removeItem("dfg_username");
+
+                window.location.href = "login.html";
+
+            });
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

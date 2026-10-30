@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepFake-Guard | Authentication</title>
+    <!-- Links to your global style.css file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container" style="max-width: 500px; margin-top: 10vh;">
+    <div class="card auth-container">
+        <h2 id="form-title" style="text-align: center; color: var(--text-main);">Login to DeepFake-Guard</h2>
+        
+        <form id="auth-form">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="username" style="display: block; margin-bottom: 8px; color: var(--text-muted);">Username</label>
+                <!-- Inputs use var(--bg-color) to match your theme -->
+                <input type="text" id="username" required placeholder="Enter username" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #334155; background: var(--bg-color); color: var(--text-main);">
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="password" style="display: block; margin-bottom: 8px; color: var(--text-muted);">Password</label>
+                <input type="password" id="password" required placeholder="Enter password" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #334155; background: var(--bg-color); color: var(--text-main);">
+            </div>
+            <!-- Button uses the .btn class from your style.css -->
+            <button type="submit" id="submit-btn" class="btn" style="width: 100%;">Login</button>
+        </form>
+
+        <div id="message" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+
+        <div class="toggle-link" id="toggle-auth" style="text-align: center; margin-top: 20px; color: var(--primary); cursor: pointer;">
+            Don't have an account? Sign up here.
+        </div>
+    </div>
+</div>
+
+<script>
+    let isLogin = true;
+    const formTitle = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const toggleAuth = document.getElementById('toggle-auth');
+    const authForm = document.getElementById('auth-form');
+    const messageDiv = document.getElementById('message');
+
+    // Toggle between Login and Signup modes
+    toggleAuth.addEventListener('click', () => {
+        isLogin = !isLogin;
+        formTitle.innerText = isLogin ? 'Login to DeepFake-Guard' : 'Create an Account';
+        submitBtn.innerText = isLogin ? 'Login' : 'Sign Up';
+        toggleAuth.innerText = isLogin ? "Don't have an account? Sign up here." : "Already have an account? Login here.";
+        messageDiv.innerText = '';
+    });
+
+    // Handle Form Submission
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const endpoint = isLogin ? 'http://127.0.0.1:5000/api/login' : 'http://127.0.0.1:5000/api/signup';
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Uses your CSS accent-green variable
+                messageDiv.style.color = 'var(--accent-green)';
+                messageDiv.innerText = data.message;
+                
+                if (isLogin) {
+                    localStorage.setItem('dfg_username', data.username);
+                    setTimeout(() => {
+                        window.location.href = 'index.html'; 
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        toggleAuth.click();
+                        document.getElementById('password').value = '';
+                    }, 1500);
+                }
+            } else {
+                // Uses your CSS accent-red variable
+                messageDiv.style.color = 'var(--accent-red)';
+                messageDiv.innerText = data.error;
+            }
+        } catch (error) {
+            messageDiv.style.color = 'var(--accent-red)';
+            messageDiv.innerText = 'Server error. Make sure app.py is running.';
+        }
+    });
+</script>
+
+</body>
+</html>

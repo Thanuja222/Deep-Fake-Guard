@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep-Fake Guard | About</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">Deep-Fake Guard</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="detect.html">Detect</a>
+      <a href="history.html">History</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>About Deep-Fake Guard</h2>
+      <p>
+        Deep-Fake Guard is designed as an enterprise-grade forensic tool and academic project demonstration to counter synthetic media manipulation.
+      </p>
+
+      <h3 style="margin-top: 1.5rem; color: #f8fafc;">Core Technologies Used</h3>
+      <ul style="color: var(--text-muted); margin-left: 1.5rem; margin-bottom: 1.5rem; line-height: 1.8;">
+        <li><strong>Frontend:</strong> HTML5, Responsive CSS3, JavaScript (Fetch API)</li>
+        <li><strong>Backend REST API:</strong> Python, Flask, Flask-CORS</li>
+        <li><strong>Machine Learning:</strong> TensorFlow/Keras, MobileNetV2 Transfer Learning</li>
+        <li><strong>Image & Video Processing:</strong> OpenCV and Pillow</li>
+        <li><strong>Data Integrity:</strong> SHA-256 Cryptographic Hashing</li>
+        <li><strong>Database Storage:</strong> SQLite lightweight relational engine</li>
+      </ul>
+
+      <h3 style="margin-top: 1.5rem; color: #f8fafc;">How Integrity Verification Works</h3>
+      <p>
+        The SHA-256 hash calculator generates a 64-character cryptographic checksum unique to the uploaded file. Even a single-pixel modification changes the resulting hash entirely. Comparing this hash to an original verified source code or ledger ensures the file has not been altered maliciously in transit.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Deep-Fake Guard Demonstration.
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

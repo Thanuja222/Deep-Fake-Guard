@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep-Fake Guard | History</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">Deep-Fake Guard</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="detect.html">Detect</a>
+      <a href="history.html">History</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Analysis History Log</h2>
+      <p>Review previous media forensic assessments stored in the SQLite secure database.</p>
+      
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>File Name</th>
+              <th>Prediction</th>
+              <th>Confidence</th>
+              <th>SHA-256 Hash</th>
+              <th>Latency</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center;">Loading history records...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Deep-Fake Guard Demonstration.
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

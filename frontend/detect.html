@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep-Fake Guard | Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h2 { text-align: center; color: #38bdf8; }
+        .drop-zone {
+            border: 2px dashed #475569;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            background: #0f172a;
+        }
+        .drop-zone:hover { border-color: #38bdf8; }
+        #preview-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #preview-img, #preview-video {
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 8px;
+            display: none;
+            margin: 0 auto;
+        }
+        .btn {
+            background-color: #6366f1;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+        .btn:hover { background-color: #4f46e5; }
+        .results-box {
+            margin-top: 30px;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .verdict-fake { color: #ef4444; font-weight: bold; }
+        .verdict-real { color: #22c55e; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Media Analysis Console</h2>
+    <p style="text-align: center; color: #94a3b8;">Upload an image or video to evaluate authenticity via MobileNetV2.</p>
+
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+        <p>Click here to select an image or video (MP4, AVI) or drag & drop</p>
+        <input type="file" id="fileInput" style="display: none;" accept="image/*,video/mp4,video/avi,video/quicktime,video/mkv,video/webm" onchange="previewFile()">
+    </div>
+
+    <div id="preview-container">
+        <img id="preview-img" alt="Preview Image">
+        <video id="preview-video" controls></video>
+    </div>
+
+    <button class="btn" id="analyzeBtn" onclick="runAnalysis()" style="display: none;">Run AI Analysis</button>
+
+    <div class="results-box" id="resultsBox">
+        <h3>Analysis Results</h3>
+        <div class="result-row"><span>File Name:</span> <span id="resName">-</span></div>
+        <div class="result-row"><span>Prediction Verdict:</span> <span id="resVerdict">-</span></div>
+        <div class="result-row"><span>Confidence Score:</span> <span id="resConfidence">-</span></div>
+        <div class="result-row"><span>SHA-256 File Hash:</span> <span id="resHash" style="font-size: 11px; word-break: break-all; max-width: 400px; text-align: right;">-</span></div>
+        <div class="result-row"><span>Processing Latency:</span> <span id="resLatency">-</span></div>
+    </div>
+</div>
+
+<script>
+    let selectedFile = null;
+
+    function previewFile() {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files && fileInput.files[0]) {
+            selectedFile = fileInput.files[0];
+            const img = document.getElementById('preview-img');
+            const video = document.getElementById('preview-video');
+            
+            if (selectedFile.type.startsWith('video/')) {
+                img.style.display = 'none';
+                video.src = URL.createObjectURL(selectedFile);
+                video.style.display = 'block';
+            } else {
+                video.style.display = 'none';
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(selectedFile);
+            }
+            
+            document.getElementById('analyzeBtn').style.display = 'block';
+            document.getElementById('resultsBox').style.display = 'none';
+        }
+    }
+
+    async function runAnalysis() {
+        if (!selectedFile) {
+            alert('Please select a file first!');
+            return;
+        }
+
+        const btn = document.getElementById('analyzeBtn');
+        btn.innerText = 'Analyzing...';
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Server error during analysis');
+            }
+
+            // Populate results correctly from response JSON
+            document.getElementById('resName').innerText = data.filename || 'Unknown';
+            
+            const verdictSpan = document.getElementById('resVerdict');
+            const pred = data.prediction || 'Unknown';
+            verdictSpan.innerText = pred.toUpperCase();
+            verdictSpan.className = pred.toLowerCase() === 'real' ? 'verdict-real' : 'verdict-fake';
+
+            document.getElementById('resConfidence').innerText = (data.confidence !== undefined ? data.confidence : '0') + '%';
+            document.getElementById('resHash').innerText = data.sha256 || 'N/A';
+            document.getElementById('resLatency').innerText = (data.latency !== undefined ? data.latency : '0') + ' seconds';
+
+            document.getElementById('resultsBox').style.display = 'block';
+
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            btn.innerText = 'Run AI Analysis';
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
